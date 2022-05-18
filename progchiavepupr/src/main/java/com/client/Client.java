@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
-
 import com.rsa.*;
 
 public class Client
@@ -12,9 +11,10 @@ public class Client
     private int p;
     private int q;
     private int e;
-    private int n;
     private int z;
     private int chiavePubblicaServer[] = new int[2];
+    private int chiavePubblicaClient[] = new int[2];
+    private int chiavePrivataClient[] = new int[2];
     private Socket client;
     private String indirizzo;
     private int porta;
@@ -31,8 +31,8 @@ public class Client
         this.indirizzo = indirizzo;
         this.porta = porta;
 
-         rsa.setChiavePubblicaClient(rsa.ChiavePubblica(this.p, this.q));
-         rsa.setChiavePrivataClient(rsa.ChiavePrivata(this.z, this.e));
+         setChiavePubblicaClient(rsa.ChiavePubblica(this.p, this.q));
+         setChiavePrivataClient(rsa.ChiavePrivata(getChiavePubblicaClient()[0], getChiavePubblicaClient()[1]));
     }
     
     public Socket Connetti()
@@ -65,22 +65,25 @@ public class Client
             chiavePubblicaServer[1] = Integer.valueOf(inDalServer.readLine()); //n
             System.out.println(inDalServer.readLine());
 
-            rsa.setChiavePubblicaServer(chiavePubblicaServer);
+            setChiavePubblicaServer(chiavePubblicaServer);
 
             outVersoServer.writeBytes("Client: Invio La Chiave Pubblica" + "\n");
-            outVersoServer.writeBytes(rsa.getChiavePubblicaClient()[0] + "\n"); //e
-            outVersoServer.writeBytes(rsa.getChiavePubblicaClient()[1] + "\n"); //n
+            outVersoServer.writeBytes(getChiavePubblicaClient()[0] + "\n"); //e
+            outVersoServer.writeBytes(getChiavePubblicaClient()[1] + "\n"); //n
 
-            System.out.print("Chiave Pubblica Server: " + rsa.getChiavePubblicaServer()[0]);
-            System.out.println(", " + rsa.getChiavePubblicaServer()[1]);
+            System.out.print("Chiave Pubblica Server: " + getChiavePubblicaServer()[0]);
+            System.out.println(", " + getChiavePubblicaServer()[1]);
 
-            System.out.print("Chiave Privata Client: " + rsa.getChiavePrivataClient()[0]);
-            System.out.println(", " + rsa.getChiavePrivataClient()[1]);
+            System.out.print("Chiave Privata Client: " + getChiavePrivataClient()[0]);
+            System.out.println(", " + getChiavePrivataClient()[1]);
 
             System.out.println(inDalServer.readLine());
-            String test = rsa.Decifra(inDalServer.readLine(), rsa.getChiavePrivataClient()[0], rsa.getChiavePrivataClient()[1]);
 
-            System.out.println(test);
+            String messaggioCriptato = inDalServer.readLine();
+
+            String test = rsa.Decifra(messaggioCriptato, getChiavePrivataClient()[0], getChiavePrivataClient()[1]);
+
+            System.out.println("Messaggio: " + test);
 
             client.close();
         }   
@@ -91,5 +94,31 @@ public class Client
             System.exit(1);
         }
     }
+
+    public int[] getChiavePubblicaServer() {
+        return chiavePubblicaServer;
+    }
+
+    public void setChiavePubblicaServer(int[] chiavePubblicaServer) {
+        this.chiavePubblicaServer = chiavePubblicaServer;
+    }
+
+    public int[] getChiavePubblicaClient() {
+        return chiavePubblicaClient;
+    }
+
+    public void setChiavePubblicaClient(int[] chiavePubblicaClient) {
+        this.chiavePubblicaClient = chiavePubblicaClient;
+    }
+
+    public int[] getChiavePrivataClient() {
+        return chiavePrivataClient;
+    }
+
+    public void setChiavePrivataClient(int[] chiavePrivataClient) {
+        this.chiavePrivataClient = chiavePrivataClient;
+    }
+
+    
     
 }

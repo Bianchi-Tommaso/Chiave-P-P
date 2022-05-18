@@ -14,33 +14,33 @@ public class Server
     private int p;
     private int q;
     private int e;
-    private int n;
     private int z;
-    private int porta;
-    private ServerSocket server;
+    private int chiavePubblicaClient[] = new int[2];
+    private int chiavePubblicaServer[] = new int[2];
+    private int chiavePrivataServer[] = new int[2];
     private Socket client;
+    private ServerSocket server;
     private BufferedReader inDalClient;
     private DataOutputStream outVersoClient;
-    private int chiavePubblicaClient[] = new int[2];
-
+    private int porta; 
+    
     RSA rsa = new RSA();
 
     public Server(int porta) throws IOException 
     {
         this.porta = porta;
-        this.p = 13;
-        this.q = 29;
+        this.p = 7;
+        this.q = 13;
 
-         rsa.setChiavePubblicaServer(rsa.ChiavePubblica(this.p, this.q));
-         rsa.setChiavePrivataServer(rsa.ChiavePrivata(this.z, this.e));
-
-        server = new ServerSocket(porta);
+         setChiavePubblicaServer(rsa.ChiavePubblica(this.p, this.q));
+         setChiavePrivataServer(rsa.ChiavePrivata(getChiavePubblicaServer()[0], getChiavePubblicaServer()[1]));
     }
     
     public Socket Attendi()
     {
         try
         {
+            server = new ServerSocket(porta);
             System.out.println("Server partito in Esecuzione");
 
             client = server.accept();
@@ -68,23 +68,23 @@ public class Server
         try
         {
             outVersoClient.writeBytes("Server: Invio La Chiave Pubblica" + "\n");
-            outVersoClient.writeBytes(rsa.getChiavePubblicaServer()[0] + "\n"); //e
-            outVersoClient.writeBytes(rsa.getChiavePubblicaServer()[1] + "\n"); //n
+            outVersoClient.writeBytes(getChiavePubblicaServer()[0] + "\n"); //e
+            outVersoClient.writeBytes(getChiavePubblicaServer()[1] + "\n"); //n
             outVersoClient.writeBytes("Server: Attendo La Chiave Pubblica" + "\n");
 
             System.out.println(inDalClient.readLine());
             chiavePubblicaClient[0] = Integer.valueOf(inDalClient.readLine()); //e
             chiavePubblicaClient[1] = Integer.valueOf(inDalClient.readLine()); //n
 
-            rsa.setChiavePubblicaClient(chiavePubblicaClient);
+            setChiavePubblicaClient(chiavePubblicaClient);
 
-            System.out.print("Chiave Pubblica Client: " + rsa.getChiavePubblicaClient()[0]);
-            System.out.println(", " + rsa.getChiavePubblicaClient()[1]);
+            System.out.print("Chiave Pubblica Client: " + getChiavePubblicaClient()[0]);
+            System.out.println(", " + getChiavePubblicaClient()[1]);
 
-            System.out.print("Chiave Privata Server: " + rsa.getChiavePrivataServer()[0]);
-            System.out.println(", " + rsa.getChiavePrivataServer()[1]);
+            System.out.print("Chiave Privata Server: " + getChiavePrivataServer()[0]);
+            System.out.println(", " + getChiavePrivataServer()[1]);
 
-            String fraseCifrata = rsa.Cifra("Messaggio Segreto", rsa.getChiavePubblicaClient()[0], rsa.getChiavePubblicaClient()[1]);
+            String fraseCifrata = rsa.Cifra("Messaggio Segreto", getChiavePubblicaClient()[0], getChiavePubblicaClient()[1]);
 
             outVersoClient.writeBytes("Server: Invio La Stringa Cifrata" + "\n");
             outVersoClient.writeBytes(fraseCifrata + "\n");
@@ -98,5 +98,31 @@ public class Server
             System.exit(1);
         }
     }
+
+    public int[] getChiavePubblicaClient() {
+        return chiavePubblicaClient;
+    }
+
+    public void setChiavePubblicaClient(int[] chiavePubblicaClient) {
+        this.chiavePubblicaClient = chiavePubblicaClient;
+    }
+
+    public int[] getChiavePubblicaServer() {
+        return chiavePubblicaServer;
+    }
+
+    public void setChiavePubblicaServer(int[] chiavePubblicaServer) {
+        this.chiavePubblicaServer = chiavePubblicaServer;
+    }
+
+    public int[] getChiavePrivataServer() {
+        return chiavePrivataServer;
+    }
+
+    public void setChiavePrivataServer(int[] chiavePrivataServer) {
+        this.chiavePrivataServer = chiavePrivataServer;
+    }
+
+    
     
 }
