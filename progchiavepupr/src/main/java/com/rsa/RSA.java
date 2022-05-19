@@ -3,6 +3,7 @@ package com.rsa;
 public class RSA
 {
     private int z;
+    private static final char[] alfabeto = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'}; 
 
     public RSA ()
     {
@@ -81,16 +82,11 @@ public class RSA
         public String Cifra(String messaggio, int e, int n)
         {
             String messaggioCifrato = "";
-            char c;
-            int ascii = 0;
-            int z;
+            long z;
 
             for(int i = 0; i < messaggio.length(); i++)
             {
-                c = messaggio.charAt(i);
-                ascii = (int) c;
-
-                z =  (int) (Math.pow(ascii, e) % n);
+                z =  (long) (Math.pow(getIndice(messaggio.charAt(i)), e) % n);
 
                 messaggioCifrato += z + ";";
             }
@@ -99,21 +95,37 @@ public class RSA
         }
 
         public String Decifra(String messaggio, int d, int n)
-    {
-        String messaggioDecifrato = "";
-        String[] messaggioCifrato = messaggio.split(";");
-        char c;
-        int z;
-
-        for(int i = 0; i < messaggioCifrato.length; i++)
         {
+            String messaggioDecifrato = "";
+            String[] messaggioCifrato = messaggio.split(";");
+            long z;
 
-            z =  (int) Math.pow(Integer.valueOf(messaggioCifrato[i]), d) % n;
-            c = (char) z;
+            for(int i = 0; i < messaggioCifrato.length; i++)
+            {
 
-            messaggioDecifrato += c;
+                z = (long) (Math.pow(Integer.valueOf(messaggioCifrato[i]), d) % n);
+
+                messaggioDecifrato += getLettera(z);
+            }
+
+            return messaggioDecifrato;
         }
 
-        return messaggioDecifrato;
+    public char getLettera(long i)
+    {
+        return alfabeto[(int) i];
+    }
+
+    public int getIndice(char c)
+    {
+        for(int i = 0; i < alfabeto.length; i++)
+            {
+                if(alfabeto[i] == c)
+                {
+                    return i;
+                }
+            }
+
+        return 0;
     }
 }

@@ -11,10 +11,13 @@ public class test {
      int chiavePubblicaClient[] = new int[2];
      int chiavePrivataClient[] = new int[2];
 
-        chiavePubblicaClient = rsa.ChiavePubblica(89, 97);
+        chiavePubblicaClient = rsa.ChiavePubblica(13, 11);
         chiavePrivataClient = rsa.ChiavePrivata(chiavePubblicaClient[0], chiavePubblicaClient[1]);
-        
-        String x = rsa.Cifra("ci", chiavePubblicaClient[0], chiavePubblicaClient[1]);
+
+         System.out.println("Chiave Pubblica: (" + chiavePubblicaClient[0]+ "," + chiavePubblicaClient[1] + ")");
+         System.out.println("Chiave Pubblica: (" + chiavePrivataClient[0]+ "," + chiavePrivataClient[1] + ")");
+
+        String x = rsa.Cifra("suzanne", chiavePubblicaClient[0], chiavePubblicaClient[1]);
         String y = rsa.Decifra(x, chiavePrivataClient[0], chiavePrivataClient[1]);
         System.out.println(y);
 
