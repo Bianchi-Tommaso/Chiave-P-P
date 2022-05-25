@@ -18,7 +18,7 @@ public class RSA
 
             this.z = (p - 1) * (q - 1);
             n = p * q;
-            e = MCD(e,z);
+            e = 7;//MCD(e,z);
 
             chiavePubblica[0] = e;
             chiavePubblica[1] = n;
@@ -86,7 +86,7 @@ public class RSA
 
             for(int i = 0; i < messaggio.length(); i++)
             {
-                z =  (long) (Math.pow(getIndice(messaggio.charAt(i)), e) % n);
+                z =  (long) (Math.pow(getIndice(messaggio.charAt(i)) + 1, e) % n);
 
                 messaggioCifrato += z + ";";
             }
@@ -103,8 +103,8 @@ public class RSA
             for(int i = 0; i < messaggioCifrato.length; i++)
             {
 
-                z = (long) (Math.pow(Integer.valueOf(messaggioCifrato[i]), d) % n);
-
+                z = (long) (Math.pow(Integer.valueOf(messaggioCifrato[i]) - 1, d) % n);
+                
                 messaggioDecifrato += getLettera(z);
             }
 
